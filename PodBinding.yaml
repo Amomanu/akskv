@@ -1,0 +1,32 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: ey-test-secret
+  labels:
+    aadpodidbinding: aad-pod-id-binding-selector
+spec:
+  containers:
+    - name: ey-test-secret
+      image: nginx
+      volumeMounts:
+      - name: secrets-store-inline
+        mountPath: "/mnt/secrets-store"
+        readOnly: true
+  volumes:
+    - name: secrets-store-inline
+      csi:
+        driver: secrets-store.csi.k8s.io
+        readOnly: true
+        volumeAttributes:
+          providerName: "azure"
+          usePodIdentity: "true"
+          tenantId: "371f0817-8b0e-4078-bd96-7de435155756"
+          keyvaultName: kv-eydev1
+          objects: |
+            array:
+              - |
+                objectName: "ey-secret"
+                objectAlias: "ey_alias"
+                objectType: secret
+                
+  
